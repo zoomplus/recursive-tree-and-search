@@ -22,19 +22,28 @@ function App() {
 
     const recursiveSearch: any = (item: any) => {
         const regexp = new RegExp(filter.name, 'g');
-        let result = item.name.ru.match(regexp);
+        let resultsStack: any = [];
 
-        if(!result) {
+        (function recursive(item) {
+            resultsStack = [
+                ...resultsStack,
+                !!item.name.ru.match(regexp)
+            ];
+
             if(item.children.length > 0) {
                 for (let children of item.children) {
                     if (children.name) {
-                        return recursiveSearch(children)
+                        recursive(children)
                     }
                 }
             }
-        }
+        })(item);
 
-        return result;
+        for(let result of resultsStack) {
+            if( result ) {
+                return true;
+            }
+        }
     }
 
     return (
